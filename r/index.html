@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A race is waiting</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body><main>
+  <!-- With the app installed, Android App Links open this URL directly in the game.
+       This page is the fallback: it shows the run and sends people to install. -->
+  <h1>Beat My Ghost</h1>
+  <div class="card" id="run">
+    <p id="who">A friend challenged you</p>
+    <div class="big" id="meters">?</div>
+    <p id="day"></p>
+    <a class="btn primary" id="install" href="https://play.google.com/store/apps/details?id=com.interstellarplay.beatmyghost">Install and race their ghost</a>
+    <a class="btn secondary" id="open" href="#">I have the game, open the race</a>
+  </div>
+  <p class="hidden" id="bad">This link looks incomplete. Ask your friend to send it again.</p>
+</main>
+<script>
+// Mirrors RunRecord.decode in src/sim/run_record.gd (only the header is needed here).
+function decode(payload) {
+  try {
+    var s = payload.replace(/-/g, "+").replace(/_/g, "/");
+    while (s.length % 4) s += "=";
+    var bin = atob(s), buf = [];
+    for (var i = 0; i < bin.length; i++) buf.push(bin.charCodeAt(i));
+    var pos = 0;
+    function varint() {
+      var v = 0, shift = 0;
+      while (true) {
+        if (pos >= buf.length || shift > 49) throw new Error("eof");
+        var b = buf[pos++];
+        v += (b & 0x7f) * Math.pow(2, shift);
+        if (b < 0x80) return v;
+        shift += 7;
+      }
+    }
+    var v = varint(), seed = varint(), death = varint() / 10;
+    if (v >= 2) varint(); // revive point, not shown here
+    var n = varint();
+    for (var k = 0; k < n; k++) varint();
+    var len = varint();
+    var name = new TextDecoder().decode(new Uint8Array(buf.slice(pos, pos + len)));
+    if ((v !== 1 && v !== 2) || pos + len !== buf.length) throw new Error("bad");
+    return { seed: seed, death: death, name: name };
+  } catch (e) { return null; }
+}
+var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+var c = new URLSearchParams(location.search).get("c") || "";
+var r = c && decode(c);
+if (r) {
+  document.getElementById("who").textContent = (r.name || "A friend") + " ran";
+  document.getElementById("meters").textContent = Math.round(r.death / 10) + " m";
+  var d = r.seed % 100, m = Math.floor(r.seed / 100) % 100;
+  if (m >= 1 && m <= 12) document.getElementById("day").textContent = "on the " + MONTHS[m - 1] + " " + d + " track. Can you beat it?";
+  document.getElementById("open").href = "intent://" + location.host + location.pathname + location.search +
+    "#Intent;scheme=https;package=com.interstellarplay.beatmyghost;end";
+} else {
+  document.getElementById("run").classList.add("hidden");
+  document.getElementById("bad").classList.remove("hidden");
+}
+</script>
+</body>
+</html>

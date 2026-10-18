@@ -1,0 +1,15 @@
+:root { --bg:#141632; --bg2:#3b2c5e; --text:#f4ecd2; --muted:#b7aedc; --accent:#ff9f43; --ghost:#9ff0ff; --card:#1f1b3a; --edge:#6a5ca8; }
+* { box-sizing: border-box; }
+body { margin:0; min-height:100vh; font-family: "Avenir Next", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color:var(--text); background: linear-gradient(var(--bg), var(--bg2)) fixed; line-height:1.55; }
+main { max-width: 640px; margin: 0 auto; padding: 48px 16px 64px; }
+h1 { font-size: 2.4rem; line-height:1.1; margin: 0 0 12px; }
+h2 { font-size: 1.2rem; margin: 32px 0 8px; color: var(--ghost); }
+p, li { color: var(--muted); }
+a { color: var(--ghost); }
+.card { background: var(--card); border: 2px solid var(--edge); border-radius: 22px; padding: 24px; margin-top: 24px; text-align:center; }
+.big { font-size: 3rem; font-weight: 700; color: var(--text); margin: 4px 0; }
+.btn { display:block; padding: 14px; border-radius: 14px; margin-top: 12px; font-weight: 600; text-decoration:none; font-size: 1.1rem; }
+.primary { background: var(--accent); color:#1b1b2f; }
+.secondary { border: 2px solid var(--edge); color: var(--text); }
+.hidden { display:none; }

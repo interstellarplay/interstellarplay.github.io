@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.interstellarplay.beatmyghost",
+    "sha256_cert_fingerprints": [
+      "E0:51:65:F7:B3:04:D7:4F:23:09:54:99:3A:78:2B:2C:8B:A3:E5:46:15:A3:2B:E6:43:A8:C1:8C:09:66:6C:D1"
+    ]
+  }
+}]

@@ -13,6 +13,7 @@
     <p id="who">A friend challenged you</p>
     <div class="big" id="meters">?</div>
     <p id="day"></p>
+    <p id="taunt" class="hidden"></p>
     <a class="btn primary" id="install" href="https://play.google.com/store/apps/details?id=com.interstellarplay.beatmyghost">Install and race their ghost</a>
     <a class="btn secondary" id="open" href="#">I have the game, open the race</a>
   </div>
@@ -44,11 +45,17 @@ function decode(payload) {
     var len = varint();
     var name = new TextDecoder().decode(new Uint8Array(buf.slice(pos, pos + len)));
     pos += len;
-    if (v >= 3) { var lookLen = varint(); pos += lookLen; } // look ("skin/hat"), not shown here
-    if ((v !== 1 && v !== 2 && v !== 3) || pos !== buf.length) throw new Error("bad");
-    return { seed: seed, death: death, name: name };
+    if (v >= 3) { var lookLen = varint(); pos += lookLen; } // look ("skin/hat/..."), not shown here
+    var taunt = v >= 4 ? varint() : 0;
+    if (v >= 4) { var invLen = varint(); pos += invLen; } // invited_by, not shown here
+    if (v >= 4) { var flagLen = varint(); pos += flagLen; } // country flag, not shown here
+    if (v < 1 || v > 4 || pos !== buf.length) throw new Error("bad");
+    return { seed: seed, death: death, name: name, taunt: taunt };
   } catch (e) { return null; }
 }
+// Same order as src/game/taunts.gd.
+var TAUNTS = ["", "Bet you can't beat me!", "Easy one.", "Revenge time!", "Catch me if you can!",
+  "Beat this!", "Your turn.", "Too fast for you?", "Rematch?"];
 var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var c = new URLSearchParams(location.search).get("c") || "";
 var r = c && decode(c);
@@ -57,6 +64,11 @@ if (r) {
   document.getElementById("meters").textContent = Math.round(r.death / 10) + " m";
   var d = r.seed % 100, m = Math.floor(r.seed / 100) % 100;
   if (m >= 1 && m <= 12) document.getElementById("day").textContent = "on the " + MONTHS[m - 1] + " " + d + " track. Can you beat it?";
+  if (TAUNTS[r.taunt]) {
+    var t = document.getElementById("taunt");
+    t.textContent = "\u201C" + TAUNTS[r.taunt] + "\u201D";
+    t.classList.remove("hidden");
+  }
   document.getElementById("open").href = "intent://" + location.host + location.pathname + location.search +
     "#Intent;scheme=https;package=com.interstellarplay.beatmyghost;end";
 } else {

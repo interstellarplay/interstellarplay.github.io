@@ -43,7 +43,9 @@ function decode(payload) {
     for (var k = 0; k < n; k++) varint();
     var len = varint();
     var name = new TextDecoder().decode(new Uint8Array(buf.slice(pos, pos + len)));
-    if ((v !== 1 && v !== 2) || pos + len !== buf.length) throw new Error("bad");
+    pos += len;
+    if (v >= 3) { var lookLen = varint(); pos += lookLen; } // look ("skin/hat"), not shown here
+    if ((v !== 1 && v !== 2 && v !== 3) || pos !== buf.length) throw new Error("bad");
     return { seed: seed, death: death, name: name };
   } catch (e) { return null; }
 }

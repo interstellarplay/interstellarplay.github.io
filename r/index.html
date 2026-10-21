@@ -49,8 +49,20 @@ function decode(payload) {
     var taunt = v >= 4 ? varint() : 0;
     if (v >= 4) { var invLen = varint(); pos += invLen; } // invited_by, not shown here
     if (v >= 4) { var flagLen = varint(); pos += flagLen; } // country flag, not shown here
-    if (v < 1 || v > 4 || pos !== buf.length) throw new Error("bad");
-    return { seed: seed, death: death, name: name, taunt: taunt };
+    var level = v >= 5 ? varint() : 0;
+    if (v >= 6) { var ns = varint(); for (var q = 0; q < ns; q++) varint(); } // slides, not shown here
+    var track = null;
+    if (v >= 7 && varint() === 1) {
+      // A built track (src/sim/track.gd): theme, speed, length in m, name words, obstacles, stars.
+      track = { theme: varint(), speed: varint(), length: varint() };
+      varint(); varint();
+      var ni = varint();
+      for (var a = 0; a < ni; a++) { varint(); varint(); varint(); varint(); }
+      var nst = varint();
+      for (var b = 0; b < nst; b++) { varint(); varint(); }
+    }
+    if (v < 1 || v > 7 || pos !== buf.length) throw new Error("bad");
+    return { seed: seed, death: death, name: name, taunt: taunt, level: level, track: track };
   } catch (e) { return null; }
 }
 // Same order as src/game/taunts.gd.
@@ -63,7 +75,12 @@ if (r) {
   document.getElementById("who").textContent = (r.name || "A friend") + " ran";
   document.getElementById("meters").textContent = Math.round(r.death / 10) + " m";
   var d = r.seed % 100, m = Math.floor(r.seed / 100) % 100;
-  if (m >= 1 && m <= 12) document.getElementById("day").textContent = "on the " + MONTHS[m - 1] + " " + d + " track. Can you beat it?";
+  if (r.track) {
+    document.getElementById("who").textContent = (r.name || "A friend") + " built a track for you";
+    document.getElementById("meters").textContent = r.track.length + " m";
+    document.getElementById("day").textContent = "Can you finish it and beat their ghost?";
+  } else if (r.level > 0) document.getElementById("day").textContent = "on Adventure level " + r.level + ". Can you beat it?";
+  else if (m >= 1 && m <= 12) document.getElementById("day").textContent = "on the " + MONTHS[m - 1] + " " + d + " track. Can you beat it?";
   if (TAUNTS[r.taunt]) {
     var t = document.getElementById("taunt");
     t.textContent = "\u201C" + TAUNTS[r.taunt] + "\u201D";

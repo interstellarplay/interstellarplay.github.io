@@ -1,24 +1,78 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A race is waiting</title>
-<link rel="stylesheet" href="../style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A race is waiting · Beat My Ghost</title>
+<meta name="description" content="Your friend challenged you to beat their ghost in Beat My Ghost.">
+<meta property="og:title" content="Can you beat my ghost?">
+<meta property="og:description" content="I ran this track in Beat My Ghost. Open the link to race my ghost.">
+<meta property="og:image" content="https://interstellarplay.github.io/og.png">
+<meta name="theme-color" content="#2b1a6b">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="../style.css?v=2">
+<style>
+.page { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; padding-bottom: 12px; }
+.race { overflow: hidden; }
+.race canvas { display: block; width: 100%; height: 170px; }
+.race .body { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 10px; }
+.who { font-weight: 800; color: var(--ink-soft); font-size: 16px; }
+.meters { font-family: var(--display); font-weight: 800; font-size: 64px; line-height: 0.95; color: var(--sky-2); }
+.where { color: var(--ink); font-weight: 700; }
+.bubble { align-self: flex-start; background: var(--card-soft); color: var(--sky-2); font-weight: 800; padding: 8px 14px; border-radius: 14px; }
+.actions { display: flex; flex-direction: column; gap: 12px; margin-top: 6px; }
+.actions .btn { width: 100%; }
+.hint { font-size: 14px; color: var(--ink-soft); text-align: center; }
+.warm { padding: 12px; }
+.warm canvas { display: block; width: 100%; height: 200px; border-radius: 16px; cursor: pointer; touch-action: manipulation; }
+.warm .bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 6px 2px; }
+.warm b { font-family: var(--display); font-size: 18px; color: var(--ink); }
+.warm span { font-size: 14px; font-weight: 800; color: var(--ink-soft); }
+.bad { padding: 24px; text-align: center; color: var(--ink); display: flex; flex-direction: column; gap: 12px; }
+.bad h1 { color: var(--sky-2); font-size: 30px; }
+</style>
 </head>
-<body><main>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="../" aria-label="Beat My Ghost home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#9ff0ff" d="M12 2C7.6 2 4 5.6 4 10v11l2.7-2 2.6 2 2.7-2 2.7 2 2.6-2 2.7 2V10C20 5.6 16.4 2 12 2z"/><circle cx="9" cy="10" r="1.6" fill="#2b1a4f"/><circle cx="15" cy="10" r="1.6" fill="#2b1a4f"/></svg>
+      <b>Beat My Ghost</b>
+    </a>
+  </header>
   <!-- With the app installed, Android App Links open this URL directly in the game.
        This page is the fallback: it shows the run and sends people to install. -->
-  <h1>Beat My Ghost</h1>
-  <div class="card" id="run">
-    <p id="who">A friend challenged you</p>
-    <div class="big" id="meters">?</div>
-    <p id="day"></p>
-    <p id="taunt" class="hidden"></p>
-    <a class="btn primary" id="install" href="https://play.google.com/store/apps/details?id=com.interstellarplay.beatmyghost">Install and race their ghost</a>
-    <a class="btn secondary" id="open" href="#">I have the game, open the race</a>
-  </div>
-  <p class="hidden" id="bad">This link looks incomplete. Ask your friend to send it again.</p>
-</main>
+  <main class="page">
+    <div class="card race" id="run">
+      <canvas id="scene" aria-hidden="true"></canvas>
+      <div class="body">
+        <span class="who" id="who">A friend challenged you</span>
+        <span class="meters" id="meters">?</span>
+        <span class="where" id="day"></span>
+        <span class="bubble" id="taunt" hidden></span>
+        <div class="actions">
+          <a class="btn" id="open" href="#">Race their ghost in the game</a>
+          <span class="btn soon" id="install" aria-disabled="true">Coming soon to Google Play</span>
+        </div>
+        <p class="hint">Got the game? The button opens this race in it.</p>
+      </div>
+    </div>
+    <div class="card warm" id="warmup">
+      <canvas id="game" tabindex="0" aria-label="Warm-up run: tap or press space to jump"></canvas>
+      <div class="bar"><b id="status">Warm up: tap to start, tap to jump</b><span id="best"></span></div>
+    </div>
+    <div class="card bad" id="bad" hidden>
+      <h1>This link looks incomplete</h1>
+      <p>Ask your friend to send it again, or copy the whole link this time.</p>
+      <a class="btn" href="../">See the game</a>
+    </div>
+  </main>
+  <footer><div class="row"><span>© 2026 Interstellar Play</span><nav aria-label="Footer"><a href="../privacy.html">Privacy policy</a></nav></div></footer>
+</div>
+<script src="../art.js?v=2"></script>
 <script>
 // Mirrors RunRecord.decode in src/sim/run_record.gd (only the header is needed here).
 function decode(payload) {
@@ -48,7 +102,8 @@ function decode(payload) {
     if (v >= 3) { var lookLen = varint(); pos += lookLen; } // look ("skin/hat/..."), not shown here
     var taunt = v >= 4 ? varint() : 0;
     if (v >= 4) { var invLen = varint(); pos += invLen; } // invited_by, not shown here
-    if (v >= 4) { var flagLen = varint(); pos += flagLen; } // country flag, not shown here
+    var flag = "";
+    if (v >= 4) { var flagLen = varint(); flag = String.fromCharCode.apply(null, buf.slice(pos, pos + flagLen)); pos += flagLen; }
     var level = v >= 5 ? varint() : 0;
     if (v >= 6) { var ns = varint(); for (var q = 0; q < ns; q++) varint(); } // slides, not shown here
     var track = null;
@@ -62,36 +117,99 @@ function decode(payload) {
       for (var b = 0; b < nst; b++) { varint(); varint(); }
     }
     if (v < 1 || v > 7 || pos !== buf.length) throw new Error("bad");
-    return { seed: seed, death: death, name: name, taunt: taunt, level: level, track: track };
+    return { seed: seed, death: death, name: name, taunt: taunt, level: level, track: track, flag: flag };
   } catch (e) { return null; }
 }
 // Same order as src/game/taunts.gd.
 var TAUNTS = ["", "Bet you can't beat me!", "Easy one.", "Revenge time!", "Catch me if you can!",
   "Beat this!", "Your turn.", "Too fast for you?", "Rematch?"];
 var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+// Same order as src/game/track_art.gd THEME_NAMES.
+var THEMES = ["Graveyard", "Underwater", "Desert", "Candy Land", "Castle", "Space", "City", "Snow", "Halloween", "Christmas"];
+// Google Play link, once the game is live (then the install button becomes a link).
+var STORE = "";
+function flagEmoji(cc) {
+  if (!/^[A-Z]{2}$/.test(cc)) return "";
+  return String.fromCodePoint(0x1F1E6 + cc.charCodeAt(0) - 65, 0x1F1E6 + cc.charCodeAt(1) - 65) + " ";
+}
 var c = new URLSearchParams(location.search).get("c") || "";
 var r = c && decode(c);
+var who = r ? (r.name ? r.name.replace(/#\d+$/, "") : "A friend") : "";
 if (r) {
-  document.getElementById("who").textContent = (r.name || "A friend") + " ran";
-  document.getElementById("meters").textContent = Math.round(r.death / 10) + " m";
-  var d = r.seed % 100, m = Math.floor(r.seed / 100) % 100;
-  if (r.track) {
-    document.getElementById("who").textContent = (r.name || "A friend") + " built a track for you";
-    document.getElementById("meters").textContent = r.track.length + " m";
-    document.getElementById("day").textContent = "Can you finish it and beat their ghost?";
-  } else if (r.level > 0) document.getElementById("day").textContent = "on Adventure level " + r.level + ". Can you beat it?";
-  else if (m >= 1 && m <= 12) document.getElementById("day").textContent = "on the " + MONTHS[m - 1] + " " + d + " track. Can you beat it?";
+  var flag = flagEmoji(r.flag);
+  var m = Math.round(r.death / 10);
+  document.getElementById("who").textContent = flag + who + (r.track ? " built a track for you" : " ran");
+  document.getElementById("meters").textContent = (r.track ? r.track.length : m) + " m";
+  var d = r.seed % 100, mo = Math.floor(r.seed / 100) % 100;
+  var where = document.getElementById("day");
+  if (r.track) where.textContent = (THEMES[r.track.theme] || "A") + " track. Can you finish it and beat their ghost?";
+  else if (r.level > 0) where.textContent = "on Adventure level " + r.level + ". Can you beat it?";
+  else if (mo >= 1 && mo <= 12) where.textContent = "on the " + MONTHS[mo - 1] + " " + d + " track. Can you beat it?";
   if (TAUNTS[r.taunt]) {
     var t = document.getElementById("taunt");
-    t.textContent = "\u201C" + TAUNTS[r.taunt] + "\u201D";
-    t.classList.remove("hidden");
+    t.textContent = "“" + TAUNTS[r.taunt] + "”";
+    t.hidden = false;
   }
   document.getElementById("open").href = "intent://" + location.host + location.pathname + location.search +
     "#Intent;scheme=https;package=com.interstellarplay.beatmyghost;end";
+  if (STORE) {
+    var a = document.createElement("a");
+    a.className = "btn white"; a.href = STORE; a.textContent = "Get the game on Google Play";
+    var old = document.getElementById("install"); old.replaceWith(a);
+  }
 } else {
-  document.getElementById("run").classList.add("hidden");
-  document.getElementById("bad").classList.remove("hidden");
+  document.getElementById("run").hidden = true;
+  document.getElementById("warmup").hidden = true;
+  document.getElementById("bad").hidden = false;
 }
+
+// The scene: their ghost running over the graves, you a step behind.
+(function () {
+  var cv = document.getElementById("scene");
+  if (!r) return;
+  var ctx = cv.getContext("2d"), t = 0, last = 0;
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function frame(now) {
+    t += Math.min(0.05, (now - last) / 1000 || 0); last = now;
+    var rect = cv.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
+    if (cv.width !== Math.round(rect.width * dpr)) { cv.width = rect.width * dpr; cv.height = rect.height * dpr; }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var W = rect.width, H = rect.height, gy = H - 26;
+    var g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#141632"); g.addColorStop(1, "#3b2c5e");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#fff3c4"; ctx.beginPath(); ctx.arc(W - 50, 36, 15, 0, 7); ctx.fill();
+    ctx.fillStyle = "#17142b"; ctx.fillRect(0, gy, W, H - gy);
+    ctx.fillStyle = "#6a5ca8"; ctx.fillRect(0, gy, W, 2);
+    ctx.save(); ctx.translate(0, gy); ctx.scale(1.7, 1.7);
+    var vw = W / 1.7, scroll = (t * 160) % 220;
+    for (var k = -1; k < vw / 110 + 2; k++) Art.stone(ctx, k * 110 - scroll * 0.5 + 60, 0, 18, 24);
+    var hop = Math.max(0, Math.sin(t * 4.2)) * 38;
+    Art.ghost(ctx, vw * 0.55, -hop, 1.1, t);
+    Art.runner(ctx, vw * 0.25, -Math.max(0, Math.sin(t * 4.2 - 0.6)) * 38, 1, t, { air: hop > 2 });
+    ctx.restore();
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  addEventListener("resize", function () { if (reduce) requestAnimationFrame(frame); });
+})();
+
+// A warm-up: the mini run with a ghost at their distance (capped so it stays doable).
+(function () {
+  if (!r) return;
+  var target = Math.max(60, Math.min(300, Math.round(r.death / 10)));
+  var status = document.getElementById("status"), bestEl = document.getElementById("best");
+  var game = Art.miniGame(document.getElementById("game"), {
+    ghostEnd: target,
+    ghostLabel: "Warm-up ghost",
+    onState: function (s, m, best) {
+      if (s === "playing") status.textContent = "Beat a ghost at " + target + " m";
+      else if (s === "beat") status.textContent = "Warmed up! Now race them for real";
+      else if (s === "over") { status.textContent = "Crashed at " + m + " m. Tap to retry"; bestEl.textContent = "Best " + best + " m"; }
+    }
+  });
+  if (game.best() > 0) bestEl.textContent = "Best " + game.best() + " m";
+})();
 </script>
 </body>
 </html>

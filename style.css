@@ -1,15 +1,109 @@
-:root { --bg:#141632; --bg2:#3b2c5e; --text:#f4ecd2; --muted:#b7aedc; --accent:#ff9f43; --ghost:#9ff0ff; --card:#1f1b3a; --edge:#6a5ca8; }
+/* Interstellar Play site: the game's B2 look (night-to-sunset sky, white cards
+   with a darker lip, gold buttons). One deliberate look, the same in light and
+   dark mode, so every colour is set explicitly. */
+:root {
+  --sky-1: #2b1a6b;
+  --sky-2: #5b2a8f;
+  --sky-3: #c2457f;
+  --sky-4: #ff9f43;
+  --ink: #2b1a4f;
+  --ink-soft: #6b5d8f;
+  --card: #ffffff;
+  --card-soft: #f3eefc;
+  --lip: rgba(43, 26, 79, 0.45);
+  --gold: #ffc24d;
+  --gold-lip: #c26a1d;
+  --ghost: #9ff0ff;
+  --runner: #ff9f43;
+  --white: #ffffff;
+  --text-on-sky: rgba(255, 255, 255, 0.86);
+  --display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Nunito", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
 * { box-sizing: border-box; }
-body { margin:0; min-height:100vh; font-family: "Avenir Next", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color:var(--text); background: linear-gradient(var(--bg), var(--bg2)) fixed; line-height:1.55; }
-main { max-width: 640px; margin: 0 auto; padding: 48px 16px 64px; }
-h1 { font-size: 2.4rem; line-height:1.1; margin: 0 0 12px; }
-h2 { font-size: 1.2rem; margin: 32px 0 8px; color: var(--ghost); }
-p, li { color: var(--muted); }
+html { background: var(--sky-1); }
+body {
+  margin: 0;
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--white);
+  background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 38%, var(--sky-3) 78%, #e8705a 100%);
+  min-height: 100%;
+}
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--display); line-height: 1.05; margin: 0; text-wrap: balance; }
+p { margin: 0; }
 a { color: var(--ghost); }
-.card { background: var(--card); border: 2px solid var(--edge); border-radius: 22px; padding: 24px; margin-top: 24px; text-align:center; }
-.big { font-size: 3rem; font-weight: 700; color: var(--text); margin: 4px 0; }
-.btn { display:block; padding: 14px; border-radius: 14px; margin-top: 12px; font-weight: 600; text-decoration:none; font-size: 1.1rem; }
-.primary { background: var(--accent); color:#1b1b2f; }
-.secondary { border: 2px solid var(--edge); color: var(--text); }
-.hidden { display:none; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+/* Top bar */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 18px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--white); }
+.brand svg { width: 34px; height: 34px; flex: none; }
+.brand b { font-family: var(--display); font-size: 21px; font-weight: 800; letter-spacing: 0.01em; }
+.top nav { display: flex; gap: 18px; font-weight: 800; font-size: 15px; }
+.top nav a { color: var(--text-on-sky); text-decoration: none; }
+.top nav a:hover { color: var(--white); }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 58px; padding: 0 26px; border-radius: 20px; border: none;
+  font-family: var(--display); font-weight: 800; font-size: 21px; text-decoration: none; cursor: pointer;
+  background: var(--gold); color: #3b1f6e; box-shadow: 0 6px 0 var(--gold-lip);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn:active { transform: translateY(5px); box-shadow: 0 1px 0 var(--gold-lip); }
+.btn.white { background: var(--white); color: var(--sky-2); box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25); }
+.btn.white:active { box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); }
+.btn.soon { background: rgba(255, 255, 255, 0.16); color: var(--white); box-shadow: none; cursor: default; }
+.btn svg { width: 22px; height: 22px; flex: none; }
+.card .btn.soon { background: var(--card-soft); color: var(--sky-2); }
+.card .btn.soon svg path { fill: var(--sky-2); }
+
+/* Cards */
+.card { background: var(--card); color: var(--ink); border-radius: 26px; box-shadow: 0 7px 0 var(--lip); }
+.chip {
+  display: inline-block; padding: 3px 12px; border-radius: 999px; font-weight: 800; font-size: 13px;
+  background: rgba(255, 255, 255, 0.18); color: var(--white); letter-spacing: 0.02em;
+}
+
+/* Footer */
+footer { padding-block: 40px 48px; color: var(--text-on-sky); font-size: 15px; }
+footer .row { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; justify-content: space-between; }
+footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+footer a { color: var(--white); font-weight: 700; }
+
+/* Long text pages (privacy) */
+.doc { padding: 26px 22px; margin-block: 8px 24px; max-width: 760px; }
+.doc h1 { font-size: 34px; color: var(--sky-2); margin-bottom: 6px; }
+.doc h2 { font-size: 22px; color: var(--sky-2); margin: 26px 0 6px; }
+.doc p, .doc li { color: var(--ink); max-width: 68ch; }
+.doc p + p { margin-top: 10px; }
+.doc a { color: var(--sky-2); }
+
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .top nav { display: none; }
+  .btn { width: 100%; font-size: 18px; padding: 0 16px; min-height: 54px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+}
+
+/* Plain pages that are just <body><main> (Dodge Kingdom's privacy policy). */
+body > main:not(.page) {
+  max-width: 760px; margin: 0 auto; padding-block: 40px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body > main:not(.page) h1 { font-size: 38px; margin-bottom: 10px; }
+body > main:not(.page) h2 { font-size: 23px; margin: 26px 0 6px; color: var(--ghost); }
+body > main:not(.page) p, body > main:not(.page) li { color: var(--text-on-sky); max-width: 68ch; }
+body > main:not(.page) p + p { margin-top: 10px; }

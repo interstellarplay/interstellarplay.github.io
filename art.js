@@ -15,55 +15,72 @@
   }
   Art.rr = rr;
 
-  // The runner with its feet at (x, y), s = scale (1 = 18 x 30 game px).
+  function oval(c, x, y, rx, ry, color) {
+    c.fillStyle = color;
+    c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, 7); c.fill();
+  }
+
+  // Bean, the runner (identity A, "Jelly"), feet at (x, y), s = scale (1 = 20 x 32 game px).
   Art.runner = function (c, x, y, s, t, opt) {
     opt = opt || {};
-    var air = opt.air, slide = opt.slide;
+    var air = opt.air;
     c.save();
-    c.translate(x, y);
+    c.translate(x + 10 * s, y);
     c.scale(s, s);
-    if (slide) c.scale(1.3, 0.5);
-    var step = air ? 0 : Math.sin(t * 18) * 3;
-    c.fillStyle = "#c26a1d";
-    c.fillRect(2, -8 + Math.max(0, step), 5, 8 - Math.max(0, step));
-    c.fillRect(11, -8 + Math.max(0, -step), 5, 8 - Math.max(0, -step));
-    c.fillStyle = opt.color || "#ff9f43";
-    rr(c, 0, -31, 18, 25, 8);
-    c.fill();
-    c.fillStyle = "#e07a24";
-    rr(c, -1, -15, 20, 6, 3);
-    c.fill();
-    c.fillStyle = "#fff";
-    c.beginPath(); c.arc(8, -24, 4, 0, 7); c.arc(15, -24, 4, 0, 7); c.fill();
-    c.fillStyle = "#1b1b2f";
-    c.beginPath(); c.arc(9.5, -24, 2, 0, 7); c.arc(16.5, -24, 2, 0, 7); c.fill();
-    c.strokeStyle = "#1b1b2f"; c.lineWidth = 1.4; c.lineCap = "round";
-    c.beginPath(); c.arc(12, -19.5, 2.6, 0.2, Math.PI - 0.2); c.stroke();
+    if (opt.slide) c.scale(1.3, 0.5);
+    var wave = Math.sin(t * 14) * 2.5, reach = air ? 13 : 10;
+    c.fillStyle = "#ff5c8a";
+    c.beginPath(); c.moveTo(-8, -15.5); c.lineTo(-8 - reach * 0.6, -16 + wave); c.lineTo(-8 - reach, -19 - wave);
+    c.lineTo(-8 - reach * 0.9, -14 - wave * 0.5); c.lineTo(-8, -11.5); c.fill();
+    var a = air ? 0 : Math.sin(t * 18), b = -a;
+    if (air) { oval(c, -4.5, -4.5, 3.4, 2.4, "#e0602a"); oval(c, 4.5, -3.5, 3.4, 2.4, "#e0602a"); }
+    else {
+      oval(c, -3.5 + a * 3.5, -2.4 - Math.max(0, a) * 2, 3.6, 2.5, "#e0602a");
+      oval(c, 4 + b * 3.5, -2.4 - Math.max(0, b) * 2, 3.6, 2.5, "#e0602a");
+    }
+    c.fillStyle = "#ff8a3d"; rr(c, -10, -32, 20, 27, 10); c.fill();
+    c.fillStyle = "rgba(224,96,42,0.55)"; rr(c, -10, -12, 20, 7, 4); c.fill();
+    oval(c, -5.2, -26.5, 2, 3.6, "rgba(255,255,255,0.38)");
+    c.fillStyle = "#ff5c8a"; c.fillRect(-10.4, -16, 20.8, 4);
+    oval(c, -2.6, -19.2, 2, 1.1, "rgba(255,92,138,0.45)");
+    [[1.2, -24], [7.6, -24]].forEach(function (e) {
+      oval(c, e[0], e[1], 3.3, 4, "#fff");
+      c.fillStyle = "#2b1a4f"; c.beginPath(); c.arc(e[0] + 1.3, e[1] + 0.4, 2.1, 0, 7); c.fill();
+      c.fillStyle = "#fff"; c.beginPath(); c.arc(e[0] + 2, e[1] - 0.5, 0.75, 0, 7); c.fill();
+    });
+    c.strokeStyle = "#2b1a4f"; c.lineWidth = 1.2; c.lineCap = "round";
+    c.beginPath(); c.arc(4.6, -19.4, 1.9, 0.3, Math.PI - 0.3); c.stroke();
     c.restore();
   };
 
-  // The ghost: a cyan dome with a wavy hem, feet at (x, y).
+  // Boo, the marshmallow ghost, hem at (x, y).
   Art.ghost = function (c, x, y, s, t, alpha) {
     c.save();
-    c.translate(x, y);
+    c.translate(x + 10 * s, y);
     c.scale(s, s);
-    c.globalAlpha = alpha == null ? 0.75 : alpha;
-    c.fillStyle = "#9ff0ff";
+    c.globalAlpha = alpha == null ? 0.85 : alpha;
+    c.fillStyle = "#b6f4ff";
     c.beginPath();
-    c.moveTo(0, 0);
-    c.lineTo(0, -19);
-    c.arc(9, -19, 9, Math.PI, 0);
-    c.lineTo(18, 0);
-    var w = Math.sin(t * 8) * 1.5;
+    c.moveTo(-10.5, -6);
+    c.lineTo(-10.5, -21);
+    c.ellipse(0, -21, 10.5, 11, 0, Math.PI, 0);
+    c.lineTo(10.5, -6);
     for (var k = 0; k < 4; k++) {
-      c.lineTo(18 - k * 4.5 - 2.25, -4 + (k % 2 ? w : -w));
-      c.lineTo(18 - (k + 1) * 4.5, 0);
+      var x0 = 10.5 - k * 5.25, bob = Math.sin(t * 9 + k * 1.4) * 1.2;
+      c.quadraticCurveTo(x0 - 2.6, -6 + 2 * (3.2 + bob), x0 - 5.25, -6);
     }
     c.closePath();
     c.fill();
     c.globalAlpha = 1;
-    c.fillStyle = "#2b1a4f";
-    c.beginPath(); c.arc(6, -19, 2, 0, 7); c.arc(12.5, -19, 2, 0, 7); c.fill();
+    c.strokeStyle = "rgba(255,255,255,0.7)"; c.lineWidth = 1.8; c.lineCap = "round";
+    c.beginPath(); c.arc(0, -21, 8, Math.PI + 0.35, Math.PI + 1.25); c.stroke();
+    oval(c, -5.6, -16.8, 1.8, 1, "rgba(255,138,181,0.6)");
+    oval(c, 9, -16.8, 1.8, 1, "rgba(255,138,181,0.6)");
+    [[-1.1, -22], [5.9, -22]].forEach(function (e) {
+      oval(c, e[0], e[1], 2.3, 3.3, "#2b1a4f");
+      c.fillStyle = "#fff"; c.beginPath(); c.arc(e[0] + 0.8, e[1] - 1.3, 0.8, 0, 7); c.fill();
+    });
+    oval(c, 2.4, -16, 1.1, 1.4, "#2b1a4f");
     c.restore();
   };
 

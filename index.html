@@ -144,7 +144,7 @@
     </div>
   </footer>
 </div>
-<script src="art.js?v=2"></script>
+<script src="art.js?v=3"></script>
 <script>
 (function () {
   var status = document.getElementById("status"), bestEl = document.getElementById("best");
@@ -188,7 +188,7 @@
         [[16, -10], [70, -38], [120, -20], [180, -42]].forEach(function (p, i) {
           c.fillStyle = i < 2 ? "#ffc24d" : "#fff"; c.beginPath(); c.arc(p[0], p[1], 7, 0, 7); c.fill();
         });
-        Art.ghost(c, 168, -44, 1.3, 2);
+        Art.ghost(c, 150, -46, 1.3, 2);
         Art.runner(c, 62, -45, 0.7, 0);
       } else {
         c.strokeStyle = "#ffd166"; c.lineWidth = 2; c.setLineDash([4, 3]);

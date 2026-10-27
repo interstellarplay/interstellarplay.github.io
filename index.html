@@ -65,11 +65,28 @@ body.studio .wrap { position: relative; z-index: 1; }
 .contact h2 { font-size: 28px; color: var(--sky-2); }
 .contact p { color: var(--ink); margin-top: 4px; }
 .contact a { color: var(--sky-2); font-weight: 800; }
+.top .gamenav { display: flex; gap: 10px; }
+.top .gamenav a { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.12); color: var(--white); font-weight: 800; font-size: 15px; text-decoration: none; }
+.top .gamenav a:hover { background: rgba(255, 255, 255, 0.22); }
+.top .gamenav img { width: 30px; height: 30px; border-radius: 9px; }
+.picks { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 24px; }
+.pick { display: inline-flex; align-items: center; gap: 12px; padding: 8px 20px 8px 8px; border-radius: 22px; text-decoration: none; font-family: var(--display); font-weight: 800; font-size: 21px; color: #fff; box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3); transition: transform 0.08s ease, box-shadow 0.08s ease; }
+.pick:active { transform: translateY(5px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3); }
+.pick img { width: 52px; height: 52px; border-radius: 14px; border: 3px solid rgba(255, 255, 255, 0.85); }
+.pick small { display: block; font-family: var(--body); font-size: 13px; font-weight: 700; opacity: 0.85; line-height: 1.2; }
+.pick.dk { background: #2f8f45; }
+.pick.bmg { background: #5b2a8f; }
+.game h2 a { color: inherit; text-decoration: none; }
+.game h2 a:hover { text-decoration: underline; }
 @media (max-width: 860px) {
   .games { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {
   .intro { padding-top: 14px; }
+  .top { flex-wrap: wrap; }
+  .top nav.gamenav { display: flex; width: 100%; }
+  .top .gamenav a { flex: 1; justify-content: center; font-size: 14px; }
+  .pick { flex: 1 1 100%; }
   .contact { grid-template-columns: 1fr; }
   .game .actions .btn { width: auto; flex: 1; }
 }
@@ -82,13 +99,17 @@ body.studio .wrap { position: relative; z-index: 1; }
       <img class="mark" src="studio-icon.svg" alt="" width="40" height="40">
       <b class="name">Interstellar <span>Play</span></b>
     </a>
-    <nav aria-label="Sections"><a href="#games">Games</a><a href="#contact">Contact</a></nav>
+    <nav class="gamenav" aria-label="Our games"><a href="dodge-kingdom/"><img src="img/dodge-kingdom/icon.png" alt="" width="30" height="30">Dodge Kingdom</a><a href="beat-my-ghost/"><img src="img/beat-my-ghost/icon.png" alt="" width="30" height="30">Beat My Ghost</a></nav>
   </header>
 
   <section class="intro">
     <span class="chip">Independent game studio</span>
     <h1>Small games, <em>big fun.</em></h1>
     <p class="lede">We make colorful mobile games you can pick up in a minute and keep playing for weeks. Two of them are on their way to Google Play.</p>
+    <div class="picks">
+      <a class="pick dk" href="dodge-kingdom/"><img src="img/dodge-kingdom/icon.png" alt="" width="52" height="52"><span>Dodge Kingdom<small>Action · in testing</small></span></a>
+      <a class="pick bmg" href="beat-my-ghost/"><img src="img/beat-my-ghost/icon.png" alt="" width="52" height="52"><span>Beat My Ghost<small>One-tap runner · coming soon</small></span></a>
+    </div>
   </section>
 
   <section class="games" id="games" aria-label="Our games">
@@ -97,7 +118,7 @@ body.studio .wrap { position: relative; z-index: 1; }
       <div class="body">
         <div class="head">
           <img class="icon" src="img/dodge-kingdom/icon.png" alt="Dodge Kingdom icon" width="72" height="72">
-          <div><h2>Dodge Kingdom</h2><span class="status">In testing · coming soon</span></div>
+          <div><h2><a href="dodge-kingdom/">Dodge Kingdom</a></h2><span class="status">In testing · coming soon</span></div>
         </div>
         <p>Dodge bombs and arrows, defeat the kings and raise your pets in a tiny low-poly kingdom. Team up with friends online.</p>
         <ul class="tags"><li>Action</li><li>40 levels</li><li>Pets</li><li>Online co-op</li></ul>
@@ -110,7 +131,7 @@ body.studio .wrap { position: relative; z-index: 1; }
       <div class="body">
         <div class="head">
           <img class="icon" src="img/beat-my-ghost/icon.png" alt="Beat My Ghost icon" width="72" height="72">
-          <div><h2>Beat My Ghost</h2><span class="status">Coming soon</span></div>
+          <div><h2><a href="beat-my-ghost/">Beat My Ghost</a></h2><span class="status">Coming soon</span></div>
         </div>
         <p>A one-tap runner where you race the ghost of your friend's run on exactly the same track. A new track every day.</p>
         <ul class="tags"><li>Runner</li><li>One tap</li><li>80 levels</li><li>Race friends</li></ul>

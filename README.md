@@ -1,10 +1,18 @@
 # interstellarplay.com
 
-Website of Interstellar Play: game pages, privacy policy, and the page that
-opens shared Beat My Ghost runs (`/r/?c=...`). Served by GitHub Pages.
+Website of Interstellar Play, served by GitHub Pages from this repo (`main`).
 
-The source lives in the `web/` folder of the game repository; this repo is the
-published copy.
+| Path | What | Edited where |
+| --- | --- | --- |
+| `/` (`index.html`, `studio-icon.svg`, `og-studio.jpg`) | Studio home: one card per game | here |
+| `/dodge-kingdom/` | Dodge Kingdom page | here (`index.html`); `privacy.html` comes from `store/privacy.html` in `interstellarplay/dodge-kingdom` |
+| `/beat-my-ghost/` | Beat My Ghost page (moved from `/` on 2026-10-27, links one folder up) | here |
+| `/privacy.html`, `/r/`, `/.well-known/`, `/app-ads.txt`, `art.js`, `favicon.svg`, `og.png` | Beat My Ghost: privacy policy, shared-run page, app links | `web/` in `interstellarplay/beat-my-ghost` |
+| `/img/<game>/` | Images for the pages (compressed copies of the store art) | here |
+| `style.css` | Shared base styles (buttons, cards, footer) | here and in `web/` of Beat My Ghost |
 
-Exception: `dodge-kingdom/` comes from the Dodge Kingdom repository
-(`store/privacy.html` in `interstellarplay/dodge-kingdom`). Keep it when copying `web/` over.
+Copy single files from `web/` deliberately: copying the whole folder over the root would put the Beat
+My Ghost page back on `/` and drop the studio home and the Dodge Kingdom page.
+
+A new game gets its own folder (`/<game>/index.html` + `privacy.html`), an `img/<game>/` folder and a
+card on the studio home.
